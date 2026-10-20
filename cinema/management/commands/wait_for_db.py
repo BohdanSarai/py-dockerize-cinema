@@ -1,6 +1,6 @@
 import time
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, OperationalError
 
 
@@ -14,6 +14,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        timeout = options["timeout"]
+        start = time.monotonic()
         self.stdout.write("Waiting for database...")
         while True:
             try:
@@ -21,5 +23,9 @@ class Command(BaseCommand):
                 break
             except OperationalError:
                 self.stdout.write("Database unavailable")
+                if time.monotonic() - start >= timeout:
+                    raise CommandError(
+                        f"Database unavailable after {timeout} seconds"
+                    )
                 time.sleep(1)
         self.stdout.write(self.style.SUCCESS("Database available!"))
