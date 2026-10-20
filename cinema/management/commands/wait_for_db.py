@@ -5,6 +5,14 @@ from django.db import connection, OperationalError
 
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--timeout",
+            type=int,
+            default=60,
+            help="Maximum time to wait for database in seconds",
+    )
+
     def handle(self, *args, **options):
         self.stdout.write("Waiting for database...")
         while True:
