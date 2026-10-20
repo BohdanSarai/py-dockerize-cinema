@@ -11,7 +11,7 @@ class Command(BaseCommand):
             type=int,
             default=60,
             help="Maximum time to wait for database in seconds",
-    )
+        )
 
     def handle(self, *args, **options):
         self.stdout.write("Waiting for database...")
